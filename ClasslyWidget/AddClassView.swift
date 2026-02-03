@@ -36,7 +36,6 @@ struct AddClassView: View {
         NavigationView {
             Form {
                 Section("class info") {
-                    // emoji picker
                     VStack(alignment: .leading) {
                         Text("emoji")
                             .font(.caption)

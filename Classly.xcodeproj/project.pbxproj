@@ -41,6 +41,7 @@
 		EF34EC712F307835001E808B /* ClasslyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClasslyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF34EC732F307835001E808B /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		EF34EC752F307835001E808B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		EF5B7CBF2F3164D600B4A1F4 /* ClasslyWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClasslyWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -54,9 +55,28 @@
 		EF34EC8B2F307836001E808B /* Exceptions for "ClasslyWidget" folder in "ClasslyWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AddClassView.swift,
 				Info.plist,
+				SettingsView.swift,
 			);
 			target = EF34EC702F307835001E808B /* ClasslyWidgetExtension */;
+		};
+		EF5B7CC12F316E9A00B4A1F4 /* Exceptions for "Classly" folder in "ClasslyWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ClassSchedule.swift,
+			);
+			target = EF34EC702F307835001E808B /* ClasslyWidgetExtension */;
+		};
+		EF5B7CC32F316EA100B4A1F4 /* Exceptions for "ClasslyWidget" folder in "Classly" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AddClassView.swift,
+				ColorHelper.swift,
+				ScheduleManager.swift,
+				SettingsView.swift,
+			);
+			target = EF34EC562F307801001E808B /* Classly */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -65,6 +85,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				EF34EC672F307802001E808B /* Exceptions for "Classly" folder in "Classly" target */,
+				EF5B7CC12F316E9A00B4A1F4 /* Exceptions for "Classly" folder in "ClasslyWidgetExtension" target */,
 			);
 			path = Classly;
 			sourceTree = "<group>";
@@ -72,6 +93,7 @@
 		EF34EC772F307835001E808B /* ClasslyWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				EF5B7CC32F316EA100B4A1F4 /* Exceptions for "ClasslyWidget" folder in "Classly" target */,
 				EF34EC8B2F307836001E808B /* Exceptions for "ClasslyWidget" folder in "ClasslyWidgetExtension" target */,
 			);
 			path = ClasslyWidget;
@@ -102,6 +124,7 @@
 		EF34EC4E2F307801001E808B = {
 			isa = PBXGroup;
 			children = (
+				EF5B7CBF2F3164D600B4A1F4 /* ClasslyWidgetExtension.entitlements */,
 				EF34EC592F307801001E808B /* Classly */,
 				EF34EC772F307835001E808B /* ClasslyWidget */,
 				EF34EC722F307835001E808B /* Frameworks */,
@@ -451,6 +474,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = ClasslyWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H8K99MLMCA;
@@ -481,6 +505,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = ClasslyWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H8K99MLMCA;

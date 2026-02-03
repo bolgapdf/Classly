@@ -6,81 +6,145 @@
 //
 
 import SwiftUI
-import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    @State private var schedules: [ClassSchedule] = []
+    @State private var showingAddClass = false
+    @State private var showingSettings = false
+    @State private var editingClass: ClassSchedule?
+    @State private var backgroundColor = "gray"
+    
     var body: some View {
         NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+            Group {
+                if schedules.isEmpty {
+                    VStack(spacing: 20) {
+                        Image(systemName: "calendar.badge.plus")
+                            .font(.system(size: 60))
+                            .foregroundStyle(.secondary)
+                        
+                        Text("No Classes Yet")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Text("Tap the + button to add your first class")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
+                } else {
+                    List {
+                        ForEach(schedules) { schedule in
+                            ClassRow(schedule: schedule)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    editingClass = schedule
+                                }
+                        }
+                        .onDelete(perform: deleteClasses)
                     }
                 }
-                .onDelete(perform: deleteItems)
             }
+            .navigationTitle("My Schedule")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                    }
                 }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingAddClass = true
+                    } label: {
+                        Label("Add Class", systemImage: "plus")
                     }
                 }
             }
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            .sheet(isPresented: $showingAddClass) {
+                AddClassView { newClass in
+                    schedules.append(newClass)
+                    saveSchedules()
+                }
+            }
+            .sheet(item: $editingClass) { classToEdit in
+                AddClassView(classToEdit: classToEdit) { updatedClass in
+                    if let index = schedules.firstIndex(where: { $0.id == updatedClass.id }) {
+                        schedules[index] = updatedClass
+                        saveSchedules()
+                    }
+                }
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(backgroundColor: $backgroundColor)
             }
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+        .onAppear {
+            loadSchedules()
+            backgroundColor = ScheduleManager.shared.loadBackgroundColor()
         }
+    }
+    
+    private func loadSchedules() {
+        schedules = ScheduleManager.shared.loadSchedules()
+    }
+    
+    private func saveSchedules() {
+        ScheduleManager.shared.saveSchedules(schedules)
+    }
+    
+    private func deleteClasses(at offsets: IndexSet) {
+        schedules.remove(atOffsets: offsets)
+        saveSchedules()
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
+struct ClassRow: View {
+    let schedule: ClassSchedule
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(schedule.emoji)
+                .font(.title)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(schedule.name)
+                    .font(.headline)
+                
+                HStack {
+                    Text("\(schedule.startTime.formatted(date: .omitted, time: .shortened)) - \(schedule.endTime.formatted(date: .omitted, time: .shortened))")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    
+                    Text("•")
+                        .foregroundStyle(.secondary)
+                    
+                    Text(schedule.roomNumber)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Text(weekdaysString(schedule.weekdays))
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+    
+    private func weekdaysString(_ weekdays: [Int]) -> String {
+        let dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        return weekdays.sorted()
+            .compactMap { weekday in
+                weekday >= 1 && weekday <= 7 ? dayNames[weekday - 1] : nil
+            }
+            .joined(separator: ", ")
+    }
+}
 
 #Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    ContentView()
 }

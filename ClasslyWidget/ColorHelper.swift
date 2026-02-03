@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// helper to convert string to color
 extension Color {
     static func fromString(_ colorString: String) -> Color {
         switch colorString.lowercased() {
